@@ -16,37 +16,57 @@ export default function BuyStockForm({
   beliBarang,
 }: Props) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border p-6">
-      <h3 className="text-2xl font-bold mb-5">
-        Barang Keluar
-      </h3>
+    <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900">
+          Barang Keluar
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Catat barang yang keluar dari inventaris.
+        </p>
+      </div>
 
-      <div className="space-y-4">
-        <input
-          type="text"
-          placeholder="Nama Barang"
-          value={namaBeli}
-          onChange={(e) =>
-            setNamaBeli(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-emerald-500"
-        />
+      <div className="space-y-5">
+        {/* Nama Barang */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Nama Barang
+          </label>
 
-        <input
-          type="number"
-          placeholder="Jumlah Beli"
-          value={jumlahBeli}
-          onChange={(e) =>
-            setJumlahBeli(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-emerald-500"
-        />
+          <input
+            type="text"
+            value={namaBeli}
+            onChange={(e) =>
+              setNamaBeli(e.target.value)
+            }
+            placeholder="Contoh: Indomie Goreng"
+            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+          />
+        </div>
 
+        {/* Jumlah */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Jumlah Keluar
+          </label>
+
+          <input
+            type="number"
+            value={jumlahBeli}
+            onChange={(e) =>
+              setJumlahBeli(e.target.value)
+            }
+            placeholder="0"
+            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+          />
+        </div>
+
+        {/* Button */}
         <button
           onClick={beliBarang}
-          className="w-full bg-emerald-500 hover:bg-emerald-600 transition text-white py-3 rounded-xl font-semibold"
+          className="w-full rounded-2xl bg-gray-900 py-3.5 text-sm font-medium text-white transition hover:bg-black"
         >
-          Proses
+          Proses Barang Keluar
         </button>
       </div>
     </div>

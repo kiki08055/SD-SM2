@@ -30,74 +30,95 @@ export default function AddStockForm({
   setLokasi,
   tambahStok,
 }: Props) {
-  console.log("nama =", nama);
-  console.log("jumlah =", jumlah);
-  console.log("harga =", harga);
   return (
-    <div className="bg-white rounded-2xl shadow-sm border p-6">
-      <h3 className="text-2xl font-bold mb-5">
-        Tambah Stok
-      </h3>
+    <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900">
+          Tambah Stok
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Tambahkan data barang baru ke inventaris.
+        </p>
+      </div>
 
-      <div className="space-y-4">
-        <input
-          type="text"
-          placeholder="Nama Barang"
-          value={nama}
-          onChange={(e) =>
-            setNama(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      <div className="space-y-5">
+        {/* Nama Barang */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Nama Barang
+          </label>
+          <input
+            type="text"
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+            placeholder="Contoh: Indomie Goreng"
+            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+          />
+        </div>
 
-        <input
-          type="number"
-          placeholder="Jumlah"
-          value={jumlah}
-          onChange={(e) =>
-            setJumlah(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        {/* Jumlah + Satuan */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Jumlah
+            </label>
+            <input
+              type="number"
+              value={jumlah}
+              onChange={(e) => setJumlah(e.target.value)}
+              placeholder="0"
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
 
-        <select
-          value={satuan}
-          onChange={(e) =>
-            setSatuan(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">
-            Pilih Satuan
-          </option>
-          <option value="PCS">
-            PCS
-          </option>
-          <option value="PACK">
-            PACK
-          </option>
-        </select>
-        <input
-          type="number"
-          placeholder="Harga"
-          value={harga}
-          onChange={(e) =>
-            setHarga(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="text"
-          placeholder="Lokasi Rak (contoh: Rak A1)"
-          value={lokasi}
-          onChange={(e) =>
-            setLokasi(e.target.value)
-          }
-          className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-blue-500"
-        />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Satuan
+            </label>
+            <select
+              value={satuan}
+              onChange={(e) => setSatuan(e.target.value)}
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            >
+              <option value="">Pilih Satuan</option>
+              <option value="PCS">PCS</option>
+              <option value="PACK">PACK</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Harga */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Harga
+          </label>
+          <input
+            type="number"
+            value={harga}
+            onChange={(e) => setHarga(e.target.value)}
+            placeholder="Rp 0"
+            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+          />
+        </div>
+
+        {/* Lokasi */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Lokasi Rak
+          </label>
+          <input
+            type="text"
+            value={lokasi}
+            onChange={(e) => setLokasi(e.target.value)}
+            placeholder="Contoh: Rak A1"
+            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+          />
+        </div>
+
+        {/* Button */}
         <button
           onClick={tambahStok}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl font-semibold"
+          className="w-full rounded-2xl bg-gray-900 py-3.5 text-sm font-medium text-white transition hover:bg-black"
         >
           Tambah Stok
         </button>
