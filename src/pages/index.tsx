@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import StatsCard from "@/components/StatsCard";
 import AddStockForm from "@/components/AddStockForm";
@@ -24,122 +24,101 @@ export default function Home() {
   const [queue, setQueue] = useState<Barang[]>([]);
   const [history, setHistory] = useState<Barang[]>([]);
 
-  const tambahStok = () => {
-    if (
-      !nama ||
-      !jumlah ||
-      !harga ||
-      !satuan ||
-      !lokasi
-    ) {
-      alert("Semua data harus diisi!");
-      return;
-    }
+ const tambahStok = () => {
+  if (!nama || !jumlah || !harga || !satuan || !lokasi) {
+    toast.error("Semua data harus diisi!");
+    return;
+  }
 
-    const barangBaru: Barang = {
-      id: crypto.randomUUID(),
-      nama,
-      jumlah: Number(jumlah),
-      satuan,
-      lokasi,
-      harga: Number(harga),
-      status: "Masuk",
-      tanggal: new Date().toLocaleString(),
-    };
-
-    console.log(barangBaru);
-
-    setQueue([...queue, barangBaru]);
-
-    setNama("");
-    setJumlah("");
-    setHarga("");
-    setSatuan("");
-    setLokasi("");
+  const barangBaru: Barang = {
+    id: crypto.randomUUID(),
+    nama,
+    jumlah: Number(jumlah),
+    satuan,
+    lokasi,
+    harga: Number(harga),
+    status: "Masuk",
+    tanggal: new Date().toLocaleString(),
   };
+
+  setQueue([...queue, barangBaru]);
+
+  setNama("");
+  setJumlah("");
+  setHarga("");
+  setSatuan("");
+  setLokasi("");
+
+  toast.success("Stok berhasil ditambahkan");
+};
 
   const beliBarang = () => {
-    if (!namaBeli || !jumlahBeli) return;
+  if (!namaBeli || !jumlahBeli) {
+    toast.error("Nama dan jumlah wajib diisi");
+    return;
+  }
 
-    let sisaBeli = Number(jumlahBeli);
+  let sisaBeli = Number(jumlahBeli);
+  const updatedQueue = [...queue];
+  const transaksiKeluar: Barang[] = [];
 
-    const updatedQueue = [...queue];
+  for (let i = 0; i < updatedQueue.length; i++) {
+    const barang = updatedQueue[i];
 
-    const transaksiKeluar: Barang[] = [];
-
-    for (
-      let i = 0;
-      i < updatedQueue.length;
-      i++
+    if (
+      barang.nama.toLowerCase() !== namaBeli.toLowerCase()
     ) {
-      const barang = updatedQueue[i];
-
-      if (
-        barang.nama.toLowerCase() !==
-        namaBeli.toLowerCase()
-      ) {
-        continue;
-      }
-
-      if (barang.jumlah >= sisaBeli) {
-        transaksiKeluar.push({
-          ...barang,
-          id: crypto.randomUUID(),
-          jumlah: sisaBeli,
-          status: "Keluar",
-          tanggal:
-            new Date().toLocaleString(),
-        });
-
-        barang.jumlah -= sisaBeli;
-
-        sisaBeli = 0;
-
-        break;
-      } else {
-        transaksiKeluar.push({
-          ...barang,
-          id: crypto.randomUUID(),
-          jumlah: barang.jumlah,
-          status: "Keluar",
-          tanggal:
-            new Date().toLocaleString(),
-        });
-
-        sisaBeli -= barang.jumlah;
-
-        barang.jumlah = 0;
-      }
+      continue;
     }
 
-    const finalQueue = updatedQueue.filter(
-      (barang) => barang.jumlah > 0
-    );
+    if (barang.jumlah >= sisaBeli) {
+      transaksiKeluar.push({
+        ...barang,
+        id: crypto.randomUUID(),
+        jumlah: sisaBeli,
+        status: "Keluar",
+        tanggal: new Date().toLocaleString(),
+      });
 
-    setQueue(finalQueue);
+      barang.jumlah -= sisaBeli;
+      sisaBeli = 0;
+      break;
+    } else {
+      transaksiKeluar.push({
+        ...barang,
+        id: crypto.randomUUID(),
+        jumlah: barang.jumlah,
+        status: "Keluar",
+        tanggal: new Date().toLocaleString(),
+      });
 
-    setHistory([
-      ...transaksiKeluar,
-      ...history,
-    ]);
-
-    setNamaBeli("");
-    setJumlahBeli("");
-
-    if (sisaBeli > 0) {
-      alert(
-        `Stok tidak cukup. Sisa permintaan ${sisaBeli}`
-      );
+      sisaBeli -= barang.jumlah;
+      barang.jumlah = 0;
     }
-  };
+  }
 
-  const hapusBarang = (id: string) => {
-    setQueue(
-      queue.filter(
-        (barang) => barang.id !== id
-      )
-    );
-  };
+  const finalQueue = updatedQueue.filter(
+    (barang) => barang.jumlah > 0
+  );
+
+  setQueue(finalQueue);
+  setHistory([...transaksiKeluar, ...history]);
+
+  setNamaBeli("");
+  setJumlahBeli("");
+
+  if (sisaBeli > 0) {
+    toast.warning(`Stok tidak cukup. Sisa permintaan ${sisaBeli}`);
+    return;
+  }
+
+  toast.success("Barang berhasil dikeluarkan");
+};
+
+const hapusBarang = (id: string) => {
+  setQueue(queue.filter((barang) => barang.id !== id));
+  toast.success("Barang berhasil dihapus");
+};
 
   const totalBarang = useMemo(() => {
     return queue.reduce(
@@ -149,72 +128,79 @@ export default function Home() {
   }, [queue]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 text-slate-800">
-      <Navbar />
+  <main className="min-h-screen bg-gray-50 text-gray-900">
+    <Navbar />
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="mb-8">
-          <h2 className="text-4xl font-bold mb-2">
-            Dashboard Gudang
-          </h2>
+    <div className="mx-auto max-w-7xl px-6 py-10">
+      {/* Header */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          Dashboard Gudang
+        </h1>
 
-          <p className="text-slate-500">
-            Barang pertama masuk akan keluar
-            lebih dulu.
-          </p>
-        </div>
+        <p className="mt-2 text-sm text-gray-500">
+          Sistem inventory berbasis FIFO untuk mengelola stok barang masuk dan
+          barang keluar.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatsCard
-            title="Total Batch"
-            value={queue.length}
-            color="text-blue-600"
-          />
+      {/* Stats */}
+      <div className="mb-10 grid gap-6 md:grid-cols-3">
+        <StatsCard
+          title="Total Batch"
+          value={queue.length}
+          color="text-gray-900"
+        />
 
-          <StatsCard
-            title="Total Stok"
-            value={totalBarang}
-            color="text-emerald-500"
-          />
+        <StatsCard
+          title="Total Stok"
+          value={totalBarang}
+          color="text-gray-900"
+        />
 
-          <StatsCard
-            title="Riwayat Keluar"
-            value={history.length}
-            color="text-orange-500"
-          />
-        </div>
+        <StatsCard
+          title="Riwayat Keluar"
+          value={history.length}
+          color="text-gray-900"
+        />
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-start">
-          <AddStockForm
-            nama={nama}
-            setNama={setNama}
-            jumlah={jumlah}
-            setJumlah={setJumlah}
-            harga={harga}
-            setHarga={setHarga}
-            satuan={satuan}
-            setSatuan={setSatuan}
-            lokasi={lokasi}
-            setLokasi={setLokasi}
-            tambahStok={tambahStok}
-          />
+      {/* Forms */}
+      <div className="mb-10 grid items-start gap-6 lg:grid-cols-2">
+        <AddStockForm
+          nama={nama}
+          setNama={setNama}
+          jumlah={jumlah}
+          setJumlah={setJumlah}
+          harga={harga}
+          setHarga={setHarga}
+          satuan={satuan}
+          setSatuan={setSatuan}
+          lokasi={lokasi}
+          setLokasi={setLokasi}
+          tambahStok={tambahStok}
+        />
 
-          <BuyStockForm
-            namaBeli={namaBeli}
-            setNamaBeli={setNamaBeli}
-            jumlahBeli={jumlahBeli}
-            setJumlahBeli={setJumlahBeli}
-            beliBarang={beliBarang}
-          />
-        </div>
+        <BuyStockForm
+          namaBeli={namaBeli}
+          setNamaBeli={setNamaBeli}
+          jumlahBeli={jumlahBeli}
+          setJumlahBeli={setJumlahBeli}
+          beliBarang={beliBarang}
+        />
+      </div>
 
+      {/* Queue */}
+      <div className="mb-10">
         <QueueList
           queue={queue}
           hapusBarang={hapusBarang}
         />
-
-        <HistoryTable history={history} />
       </div>
-    </main>
-  );
+
+      {/* History */}
+      <HistoryTable history={history} />
+    </div>
+  </main>
+);
 }
