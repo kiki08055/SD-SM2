@@ -1,78 +1,220 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+"use client";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { useMemo, useState } from "react";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Navbar from "@/components/Navbar";
+import StatsCard from "@/components/StatsCard";
+import AddStockForm from "@/components/AddStockForm";
+import BuyStockForm from "@/components/BuyStockForm";
+import QueueList from "@/components/QueueList";
+import HistoryTable from "@/components/HistoryTable";
+
+import { Barang } from "@/model/barang";
 
 export default function Home() {
+  const [nama, setNama] = useState("");
+  const [jumlah, setJumlah] = useState("");
+  const [harga, setHarga] = useState("");
+  const [satuan, setSatuan] = useState("");
+  const [lokasi, setLokasi] = useState("");
+
+  const [namaBeli, setNamaBeli] = useState("");
+  const [jumlahBeli, setJumlahBeli] = useState("");
+
+  const [queue, setQueue] = useState<Barang[]>([]);
+  const [history, setHistory] = useState<Barang[]>([]);
+
+  const tambahStok = () => {
+    if (
+      !nama ||
+      !jumlah ||
+      !harga ||
+      !satuan ||
+      !lokasi
+    ) {
+      alert("Semua data harus diisi!");
+      return;
+    }
+
+    const barangBaru: Barang = {
+      id: crypto.randomUUID(),
+      nama,
+      jumlah: Number(jumlah),
+      satuan,
+      lokasi,
+      harga: Number(harga),
+      status: "Masuk",
+      tanggal: new Date().toLocaleString(),
+    };
+
+    console.log(barangBaru);
+
+    setQueue([...queue, barangBaru]);
+
+    setNama("");
+    setJumlah("");
+    setHarga("");
+    setSatuan("");
+    setLokasi("");
+  };
+
+  const beliBarang = () => {
+    if (!namaBeli || !jumlahBeli) return;
+
+    let sisaBeli = Number(jumlahBeli);
+
+    const updatedQueue = [...queue];
+
+    const transaksiKeluar: Barang[] = [];
+
+    for (
+      let i = 0;
+      i < updatedQueue.length;
+      i++
+    ) {
+      const barang = updatedQueue[i];
+
+      if (
+        barang.nama.toLowerCase() !==
+        namaBeli.toLowerCase()
+      ) {
+        continue;
+      }
+
+      if (barang.jumlah >= sisaBeli) {
+        transaksiKeluar.push({
+          ...barang,
+          id: crypto.randomUUID(),
+          jumlah: sisaBeli,
+          status: "Keluar",
+          tanggal:
+            new Date().toLocaleString(),
+        });
+
+        barang.jumlah -= sisaBeli;
+
+        sisaBeli = 0;
+
+        break;
+      } else {
+        transaksiKeluar.push({
+          ...barang,
+          id: crypto.randomUUID(),
+          jumlah: barang.jumlah,
+          status: "Keluar",
+          tanggal:
+            new Date().toLocaleString(),
+        });
+
+        sisaBeli -= barang.jumlah;
+
+        barang.jumlah = 0;
+      }
+    }
+
+    const finalQueue = updatedQueue.filter(
+      (barang) => barang.jumlah > 0
+    );
+
+    setQueue(finalQueue);
+
+    setHistory([
+      ...transaksiKeluar,
+      ...history,
+    ]);
+
+    setNamaBeli("");
+    setJumlahBeli("");
+
+    if (sisaBeli > 0) {
+      alert(
+        `Stok tidak cukup. Sisa permintaan ${sisaBeli}`
+      );
+    }
+  };
+
+  const hapusBarang = (id: string) => {
+    setQueue(
+      queue.filter(
+        (barang) => barang.id !== id
+      )
+    );
+  };
+
+  const totalBarang = useMemo(() => {
+    return queue.reduce(
+      (acc, item) => acc + item.jumlah,
+      0
+    );
+  }, [queue]);
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 text-slate-800">
+      <Navbar />
+
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="mb-8">
+          <h2 className="text-4xl font-bold mb-2">
+            Dashboard Gudang
+          </h2>
+
+          <p className="text-slate-500">
+            Barang pertama masuk akan keluar
+            lebih dulu.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <StatsCard
+            title="Total Batch"
+            value={queue.length}
+            color="text-blue-600"
+          />
+
+          <StatsCard
+            title="Total Stok"
+            value={totalBarang}
+            color="text-emerald-500"
+          />
+
+          <StatsCard
+            title="Riwayat Keluar"
+            value={history.length}
+            color="text-orange-500"
+          />
         </div>
-      </main>
-    </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-start">
+          <AddStockForm
+            nama={nama}
+            setNama={setNama}
+            jumlah={jumlah}
+            setJumlah={setJumlah}
+            harga={harga}
+            setHarga={setHarga}
+            satuan={satuan}
+            setSatuan={setSatuan}
+            lokasi={lokasi}
+            setLokasi={setLokasi}
+            tambahStok={tambahStok}
+          />
+
+          <BuyStockForm
+            namaBeli={namaBeli}
+            setNamaBeli={setNamaBeli}
+            jumlahBeli={jumlahBeli}
+            setJumlahBeli={setJumlahBeli}
+            beliBarang={beliBarang}
+          />
+        </div>
+
+        <QueueList
+          queue={queue}
+          hapusBarang={hapusBarang}
+        />
+
+        <HistoryTable history={history} />
+      </div>
+    </main>
   );
 }
