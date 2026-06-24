@@ -103,16 +103,43 @@ export default function AddStockForm({
 
         {/* Lokasi */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          {/* <label className="block text-sm font-medium text-gray-700 mb-2">
             Lokasi Rak
-          </label>
-          <input
-            type="text"
-            value={lokasi}
-            onChange={(e) => setLokasi(e.target.value)}
-            placeholder="Contoh: Rak A1"
-            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-          />
+          </label> */}
+         <div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Lokasi Rak
+  </label>
+  <select
+    value={lokasi}
+    onChange={(e) => setLokasi(e.target.value)}
+    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+  >
+    <option value="">Pilih Rak</option>
+
+    <optgroup label="Zona A">
+      <option value="A1">Rak A1</option>
+      <option value="A2">Rak A2</option>
+      <option value="A3">Rak A3</option>
+    </optgroup>
+
+    <optgroup label="Zona B">
+      <option value="B1">Rak B1</option>
+      <option value="B2">Rak B2</option>
+      <option value="B3">Rak B3</option>
+    </optgroup>
+
+    <optgroup label="Zona C">
+      <option value="C1">Rak C1</option>
+      <option value="C2">Rak C2</option>
+      <option value="C3">Rak C3</option>
+    </optgroup>
+  </select>
+
+  <p className="mt-2 text-xs text-gray-500">
+    Pilih lokasi penyimpanan barang di gudang.
+  </p>
+</div>
         </div>
 
         {/* Button */}
