@@ -125,12 +125,15 @@ export default function Home() {
   setJumlahBeli("");
 
   if (sisaBeli > 0) {
-    toast.warning(`Stok tidak cukup. Sisa permintaan ${sisaBeli}`);
-    return;
-  }
-
+  toast.warning(
+    `Stok tidak mencukupi. Berhasil mengeluarkan ${
+      Number(jumlahBeli) - sisaBeli
+    } item, sisa permintaan ${sisaBeli} item.`
+  );
+} else {
   toast.success("Barang berhasil dikeluarkan");
-};
+}
+  }
 
 const hapusBarang = (id: string) => {
   setQueue(queue.filter((barang) => barang.id !== id));
