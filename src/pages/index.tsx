@@ -30,6 +30,18 @@ export default function Home() {
     return;
   }
 
+  if (Number(jumlah) <= 0) {
+    toast.error("Jumlah stok harus lebih dari 0");
+    return;
+  }
+
+  if (Number(harga) <= 0) {
+    toast.error("Harga harus lebih dari 0");
+    return;
+  }
+
+
+
   const barangBaru: Barang = {
     id: crypto.randomUUID(),
     nama,
@@ -57,6 +69,11 @@ export default function Home() {
     toast.error("Nama dan jumlah wajib diisi");
     return;
   }
+
+  if (Number(jumlahBeli) <= 0) {
+  toast.error("Jumlah pembelian harus lebih dari 0");
+  return;
+}
 
   let sisaBeli = Number(jumlahBeli);
   const updatedQueue = [...queue];
